@@ -1,0 +1,10 @@
+# Original datasets and intermediate files
+/data/raw/
+/data/interim/
+
+# Temporary Microsoft Office files
+~$*
+
+# Operating system files
+Thumbs.db
+.DS_Store
