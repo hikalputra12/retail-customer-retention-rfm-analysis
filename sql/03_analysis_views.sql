@@ -62,6 +62,22 @@ SELECT
     SUM(invoice_value) AS purchase_value
 FROM analytics.purchase_invoices;
 
+-- 5. Customer monthly activity and first observed purchase month
+CREATE OR REPLACE VIEW analytics.customer_monthly_activity AS
+WITH monthly_activity AS (
+    SELECT DISTINCT
+        customer_id,
+        DATE_TRUNC('month', purchase_date)::date AS purchase_month
+    FROM analytics.purchase_invoices
+)
+SELECT
+    customer_id,
+    purchase_month,
+    MIN(purchase_month) OVER (
+        PARTITION BY customer_id
+    ) AS cohort_month
+FROM monthly_activity;
+
 -- 6. Customer RFM metrics as of 1 December 2011
 CREATE OR REPLACE VIEW analytics.customer_rfm AS
 SELECT

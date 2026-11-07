@@ -199,32 +199,3 @@ WHERE NULLIF(TRIM(customer_id), '') IS NOT NULL
 GROUP BY stock_code
 ORDER BY line_count DESC;
 
--- 2. Validate the eligible purchase population
-SELECT
-    COUNT(*) AS purchase_lines,
-    COUNT(DISTINCT invoice_no) AS purchase_invoices,
-    COUNT(DISTINCT customer_id) AS customers,
-    SUM(line_value) AS purchase_value
-FROM analytics.purchase_lines;
-
--- 3. Aggregate eligible purchase lines into invoices
-CREATE OR REPLACE VIEW analytics.purchase_invoices AS
-SELECT
-    customer_id,
-    invoice_no,
-    MIN(invoice_date) AS purchase_date,
-    COUNT(*) AS line_count,
-    SUM(quantity) AS total_quantity,
-    SUM(line_value) AS invoice_value
-FROM analytics.purchase_lines
-GROUP BY
-    customer_id,
-    invoice_no;
-
-    -- 4. Validate invoice aggregation
-SELECT
-    COUNT(*) AS purchase_invoices,
-    COUNT(DISTINCT customer_id) AS customers,
-    SUM(line_count) AS purchase_lines,
-    SUM(invoice_value) AS purchase_value
-FROM analytics.purchase_invoices;
